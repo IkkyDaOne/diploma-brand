@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>НЕАЛИТ | Premium Clothing</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+    <div id="preloader">
+        <div class="loader-text"></div>
+    </div>
+
+    <div id="bg-layer"></div>
+
+    <!-- Заголовок бренда -->
+    <h1 class="brand-title">НЕАЛИТ</h1>
+
+    <div id="logo-wrapper">
+        <div id="canvas-container"></div>
+    </div>
+
+    <div id="enter-prompt">
+        <span class="pulse-text">PRESS ENTER TO ENTER</span>
+    </div>
+
+    <header id="site-header">
+        <div id="header-logo-container"></div>
+        <nav id="main-nav">
+            <a href="#" data-section="catalog">Каталог</a>
+            <a href="#" data-section="about">О бренде</a>
+            <a href="#" data-section="author">Автор</a>
+            <a href="#" data-section="contacts">Контакты</a>
+        </nav>
+    </header>
+
+    <main id="main-content">
+        <section id="catalog-section" class="content-section">
+            <h2 class="section-title">Каталог</h2>
+            <div id="catalog-grid"></div>
+        </section>
+
+        <section id="about-section" class="content-section">
+            <h2 class="section-title">О бренде</h2>
+            <div class="about-text">
+                <p>НЕАЛИТ — это философия свободы и лёгкости. Мы создаём одежду, которая не ограничивает движение, а подчёркивает индивидуальность. Каждый предмет коллекции вдохновлён небесной палитрой и природной гармонией.</p>
+            </div>
+        </section>
+
+        <section id="author-section" class="content-section">
+            <h2 class="section-title">Создатель</h2>
+            <div class="author-card">
+                <div class="author-photo"></div>
+                <div class="author-info">
+                    <h3>Алексей Неалит</h3>
+                    <p>Дизайнер и основатель бренда. 10 лет в индустрии моды. Верит, что одежда должна быть второй кожей, а не просто тканью.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacts-section" class="content-section">
+            <h2 class="section-title">Контакты</h2>
+            <div class="contacts-info">
+                <p>Email: hello@nealit-brand.by</p>
+                <p>Телефон: +375 (29) 000-00-00</p>
+                <p>Адрес шоурума: Минск, ул. Небесная, 12</p>
+            </div>
+        </section>
+
+        <section id="product-view" class="content-section">
+            <button id="back-to-catalog" class="btn-secondary">← Назад в каталог</button>
+            <div id="product-details-container"></div>
+        </section>
+    </main>
+
+    <aside id="checkout-panel">
+        <button id="close-checkout" class="close-btn">×</button>
+        <div id="checkout-content">
+            <h3>Оформление заказа</h3>
+            <div id="checkout-item-info"></div>
+            <form id="checkout-form">
+                <label for="checkout-name">ФИО получателя</label>
+                <input type="text" id="checkout-name" required placeholder="Иванов Иван Иванович">
+                <label for="checkout-address">Адрес доставки</label>
+                <input type="text" id="checkout-address" required placeholder="г. Минск, ул. Примерная, д. 1">
+                <label for="checkout-card">Номер карты</label>
+                <input type="text" id="checkout-card" required placeholder="0000 0000 0000 0000" maxlength="19">
+                <label>Срок / CVC</label>
+                <div class="card-meta">
+                    <input type="text" id="checkout-exp" required placeholder="MM/YY" maxlength="5">
+                    <input type="text" id="checkout-cvc" required placeholder="CVC" maxlength="3">
+                </div>
+                <button type="submit" class="btn-primary">ОПЛАТИТЬ</button>
+            </form>
+            <p class="security-note">🔒 Данные защищены (имитация). продакшен: Stripe/Payment Gateway + HTTPS + JWT.</p>
+        </div>
+    </aside>
+
+    <script src="data/products.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/3d-logo.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
