@@ -2,106 +2,277 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>НЕАЛИТ | Premium Clothing</title>
+    <meta name="viewport" content="width=1280, initial-scale=1.0">
+    <title>НЕАЛИТ — Premium Clothing SPA</title>
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 </head>
-<body>
-    <div id="preloader">
-        <div class="loader-text"></div>
+<body class="no-scroll">
+
+    <!-- 🔹 Прелоадер -->
+    <div id="preloader" class="preloader">
+        <div class="preloader__mark">НЕАЛИТ</div>
+        <div class="preloader__line"></div>
     </div>
 
-    <div id="bg-layer"></div>
+    <!-- 🔹 Первый экран входа -->
+    <section id="intro-screen" class="intro-screen" aria-label="Входной экран НЕАЛИТ">
+        <!-- Контейнер для 3D сферы -->
+        <div id="3d-sky-container" style="width: 100%; height: 100%;"></div>
 
-    <!-- Заголовок бренда -->
-    <h1 class="brand-title">НЕАЛИТ</h1>
+        <div id="intro-3d-logo" class="intro-3d-logo" aria-hidden="true"></div>
 
-    <div id="logo-wrapper">
-        <div id="canvas-container"></div>
-    </div>
+        <h1 id="intro-brand-title" class="intro-brand-title">НЕАЛИТ</h1>
 
-    <div id="enter-prompt">
-        <span class="pulse-text">PRESS ENTER TO ENTER</span>
-    </div>
+        <button id="enter-prompt" class="enter-prompt" type="button">
+            PRESS ANY BUTTON TO ENTER
+        </button>
+    </section>
 
-    <header id="site-header">
-        <div id="header-logo-container"></div>
-        <nav id="main-nav">
-            <a href="#" data-section="catalog">Каталог</a>
-            <a href="#" data-section="about">О бренде</a>
-            <a href="#" data-section="author">Автор</a>
-            <a href="#" data-section="contacts">Контакты</a>
+    <!-- 🔹 Шапка: теперь без фона, без blur и без 3D-логотипа -->
+    <header id="site-header" class="site-header is-hidden">
+        <div class="site-header__brand">НЕАЛИТ</div>
+
+        <nav class="site-header__nav" aria-label="Главная навигация">
+            <button class="nav-link is-active" type="button" data-target="catalog">Каталог</button>
+            <button class="nav-link" type="button" data-target="about">О бренде</button>
+            <button class="nav-link" type="button" data-target="author">Автор</button>
+            <button class="nav-link" type="button" data-target="contacts">Контакты</button>
         </nav>
     </header>
 
-    <main id="main-content">
-        <section id="catalog-section" class="content-section">
-            <h2 class="section-title">Каталог</h2>
-            <div id="catalog-grid"></div>
-        </section>
+    <!-- 🔹 Основной контент теперь лендинг-структура: все секции идут подряд -->
+    <main id="site-main" class="site-main is-hidden">
 
-        <section id="about-section" class="content-section">
-            <h2 class="section-title">О бренде</h2>
-            <div class="about-text">
-                <p>НЕАЛИТ — это философия свободы и лёгкости. Мы создаём одежду, которая не ограничивает движение, а подчёркивает индивидуальность. Каждый предмет коллекции вдохновлён небесной палитрой и природной гармонией.</p>
+        <section id="catalog" class="content-section catalog-section reveal-section">
+            <div class="section-kicker">Premium Clothing SPA</div>
+
+            <!-- 🔹 3D-логотип перенесён в начало главного меню/каталога -->
+            <div class="menu-logo-card">
+                <div id="menu-3d-logo" class="menu-3d-logo" aria-hidden="true"></div>
+                <div class="menu-logo-card__text">
+                    <p class="menu-logo-card__label">Digital fashion identity</p>
+                    <h2>Премиальная одежда с визуальной эстетикой будущего</h2>
+                    <p>
+                        НЕАЛИТ объединяет чистую форму, дорогие материалы и спокойную технологичность.
+                        Каталог работает как одностраничная витрина без перезагрузки страницы.
+                    </p>
+                </div>
             </div>
+
+            <div class="section-head">
+                <div>
+                    <p class="section-eyebrow">Collection 2026</p>
+                    <h2>Каталог</h2>
+                </div>
+
+                <div id="auth-mini-panel" class="auth-mini-panel">
+                    <button id="open-auth-btn" class="ghost-button" type="button">Войти по email</button>
+                </div>
+            </div>
+
+            <div id="product-grid" class="product-grid" aria-live="polite">
+                <div class="loading-card">Загрузка каталога...</div>
+            </div>
+
+            <article id="product-detail" class="product-detail is-hidden" aria-live="polite"></article>
         </section>
 
-        <section id="author-section" class="content-section">
-            <h2 class="section-title">Создатель</h2>
-            <div class="author-card">
-                <div class="author-photo"></div>
-                <div class="author-info">
-                    <h3>Алексей Неалит</h3>
-                    <p>Дизайнер и основатель бренда. 10 лет в индустрии моды. Верит, что одежда должна быть второй кожей, а не просто тканью.</p>
+        <section id="about" class="content-section about-section reveal-section">
+            <div class="section-head section-head--wide">
+                <p class="section-eyebrow">About brand</p>
+                <h2>О бренде</h2>
+            </div>
+
+            <div class="text-grid">
+                <div class="glass-card">
+                    <h3>Идея бренда</h3>
+                    <p>
+                        НЕАЛИТ — это учебный SPA-проект премиального бренда одежды, созданный как
+                        сайт-витрина с интерактивной подачей, 3D-графикой и плавной навигацией.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <h3>Технологичность</h3>
+                    <p>
+                        Проект реализован без фреймворков и сборщиков: HTML5, CSS3, Vanilla JavaScript,
+                        Three.js, GSAP и локальный JSON-источник данных.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <h3>Премиальный стиль</h3>
+                    <p>
+                        Визуальный язык строится на тёмном космическом фоне, стеклянных карточках,
+                        мягких анимациях и аккуратной типографике.
+                    </p>
                 </div>
             </div>
         </section>
 
-        <section id="contacts-section" class="content-section">
-            <h2 class="section-title">Контакты</h2>
-            <div class="contacts-info">
-                <p>Email: hello@nealit-brand.by</p>
-                <p>Телефон: +375 (29) 000-00-00</p>
-                <p>Адрес шоурума: Минск, ул. Небесная, 12</p>
+        <section id="author" class="content-section author-section reveal-section">
+            <div class="section-head section-head--wide">
+                <p class="section-eyebrow">Project author</p>
+                <h2>Автор</h2>
+            </div>
+
+            <div class="author-card">
+                <div class="author-card__image" aria-hidden="true">A</div>
+                <div class="author-card__content">
+                    <h3>Алексей Неалит</h3>
+                    <p>
+                        Автор проекта разработал одностраничный сайт-витрину для демонстрации
+                        премиального бренда одежды. Основной акцент сделан на интерактивности,
+                        визуальной выразительности и чистой фронтенд-архитектуре.
+                    </p>
+                    <p>
+                        В дипломной работе проект может быть представлен как пример SPA-интерфейса
+                        с каталогом товаров, авторизацией, валидацией форм и подготовкой к внешней базе данных.
+                    </p>
+                </div>
             </div>
         </section>
 
-        <section id="product-view" class="content-section">
-            <button id="back-to-catalog" class="btn-secondary">← Назад в каталог</button>
-            <div id="product-details-container"></div>
+        <section id="contacts" class="content-section contacts-section reveal-section">
+            <div class="section-head section-head--wide">
+                <p class="section-eyebrow">Contacts</p>
+                <h2>Контакты</h2>
+            </div>
+
+            <div class="contacts-grid">
+                <div class="glass-card">
+                    <span class="contact-label">Город</span>
+                    <strong>Минск, Республика Беларусь</strong>
+                </div>
+
+                <div class="glass-card">
+                    <span class="contact-label">Телефон</span>
+                    <strong>+375 29 000-00-00</strong>
+                </div>
+
+                <div class="glass-card">
+                    <span class="contact-label">Сайт</span>
+                    <strong>nealit.by</strong>
+                </div>
+
+                <div class="glass-card">
+                    <span class="contact-label">Email</span>
+                    <strong>order@nealit.by</strong>
+                </div>
+            </div>
         </section>
     </main>
 
-    <aside id="checkout-panel">
-        <button id="close-checkout" class="close-btn">×</button>
-        <div id="checkout-content">
-            <h3>Оформление заказа</h3>
-            <div id="checkout-item-info"></div>
-            <form id="checkout-form">
-                <label for="checkout-name">ФИО получателя</label>
-                <input type="text" id="checkout-name" required placeholder="Иванов Иван Иванович">
-                <label for="checkout-address">Адрес доставки</label>
-                <input type="text" id="checkout-address" required placeholder="г. Минск, ул. Примерная, д. 1">
-                <label for="checkout-card">Номер карты</label>
-                <input type="text" id="checkout-card" required placeholder="0000 0000 0000 0000" maxlength="19">
-                <label>Срок / CVC</label>
-                <div class="card-meta">
-                    <input type="text" id="checkout-exp" required placeholder="MM/YY" maxlength="5">
-                    <input type="text" id="checkout-cvc" required placeholder="CVC" maxlength="3">
-                </div>
-                <button type="submit" class="btn-primary">ОПЛАТИТЬ</button>
+    <!-- 🔹 Боковая панель заказа -->
+    <aside id="order-panel" class="order-panel" aria-hidden="true">
+        <button id="close-order-panel" class="order-panel__close" type="button" aria-label="Закрыть панель заказа">
+            ×
+        </button>
+
+        <div class="order-panel__content">
+            <p class="section-eyebrow">Fast order</p>
+            <h2>Оформление заказа</h2>
+
+            <div class="order-product">
+                <span>Товар</span>
+                <strong id="order-product-title">Не выбран</strong>
+            </div>
+
+            <div class="order-product">
+                <span>Стоимость</span>
+                <strong id="order-product-price">0,00 Br</strong>
+            </div>
+
+            <form id="order-form" class="order-form" novalidate>
+                <input id="order-product-id" type="hidden" name="productId">
+
+                <label>
+                    Имя
+                    <input id="customer-name" type="text" name="name" maxlength="60" placeholder="Ваше имя">
+                </label>
+
+                <label>
+                    Телефон
+                    <input id="customer-phone" type="tel" name="phone" maxlength="30" placeholder="+375 29 000-00-00">
+                </label>
+
+                <label>
+                    Адрес доставки
+                    <textarea id="customer-address" name="address" maxlength="180" placeholder="Минск, улица, дом"></textarea>
+                </label>
+
+                <button class="primary-button" type="submit">Подтвердить заказ</button>
             </form>
-            <p class="security-note">🔒 Данные защищены (имитация). продакшен: Stripe/Payment Gateway + HTTPS + JWT.</p>
         </div>
     </aside>
 
-    <script src="data/products.js"></script>
+    <!-- 🔹 Модальное окно авторизации по email -->
+    <div id="auth-modal" class="modal is-hidden" aria-hidden="true">
+        <div class="modal__backdrop" data-auth-close></div>
+
+        <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+            <button class="modal__close" type="button" data-auth-close aria-label="Закрыть окно авторизации">
+                ×
+            </button>
+
+            <p class="section-eyebrow">Email authorization</p>
+            <h2 id="auth-modal-title">Вход по email</h2>
+
+            <p class="modal__description">
+                Для дипломной версии код отправляется в консоль браузера.
+                В продакшене этот шаг подключается через EmailJS, Firebase Auth или серверную почтовую функцию.
+            </p>
+
+            <div class="auth-form">
+                <label>
+                    Email
+                    <input id="auth-email" type="email" maxlength="90" placeholder="name@example.com">
+                </label>
+
+                <label class="remember-row">
+                    <input id="auth-remember" type="checkbox" checked>
+                    <span>Запомнить меня</span>
+                </label>
+
+                <button id="auth-send-code-btn" class="primary-button" type="button">
+                    Получить код
+                </button>
+
+                <div id="auth-code-row" class="auth-code-row is-hidden">
+                    <label>
+                        6-значный код
+                        <input id="auth-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+                    </label>
+
+                    <button id="auth-verify-code-btn" class="primary-button" type="button">
+                        Войти
+                    </button>
+                </div>
+
+                <button id="auth-logout-btn" class="ghost-button is-hidden" type="button">
+                    Выйти из аккаунта
+                </button>
+
+                <p id="auth-message" class="form-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <!-- CDN-библиотеки без npm -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- Локальные модули проекта -->
     <script src="js/state.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/3d-logo.js"></script>
     <script src="js/app.js"></script>
+
+
+
+
 </body>
 </html>

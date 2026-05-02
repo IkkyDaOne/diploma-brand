@@ -1,0 +1,924 @@
+/* =========================================================
+   НЕАЛИТ — Premium Clothing SPA
+   Этап 1: база, авторизация, плавный скролл, шапка, вход
+   ========================================================= */
+
+:root {
+    --color-bg: #030711;
+    --color-bg-deep: #02040a;
+    --color-text: #f4f7ff;
+    --color-muted: rgba(244, 247, 255, 0.68);
+    --color-soft: rgba(244, 247, 255, 0.12);
+    --color-line: rgba(255, 255, 255, 0.16);
+    --color-accent: #9cc8ff;
+    --color-accent-strong: #ffffff;
+    --color-error: #ff8f8f;
+    --color-success: #a7ffca;
+    --header-height: 150px;
+    --max-width: 1180px;
+    --radius-lg: 30px;
+    --radius-md: 20px;
+    --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.42);
+    --transition-main: 280ms ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-width: 1180px;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+    background-image:
+        radial-gradient(circle at 50% 10%, rgba(64, 145, 255, 0.28), transparent 34%),
+        linear-gradient(180deg, rgba(1, 8, 24, 0.2), rgba(2, 4, 10, 0.95)),
+        url("../assets/sky.jpg");  /* Основной фон */
+    background-size: cover;
+    background-position: center 0;
+    background-attachment: fixed;
+    overflow-x: hidden;
+    position: relative; /* Для размещения псевдо-элемента */
+    transition: background-position 1s ease; /* Плавный параллакс фона */
+}
+
+/* Псевдо-элемент для плавного затемнения */
+body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(2, 4, 10, 0.85);  /* Начальное затемнение */
+    z-index: 1;
+    pointer-events: none;  /* Чтобы не блокировать элементы */
+    opacity: 0; /* Скрыто по умолчанию */
+    transition: opacity 0.6s ease-out; /* Плавное увеличение затемнения */
+}
+
+.site-main {
+    position: relative;
+    z-index: 10;
+}
+
+body.no-scroll {
+    height: 100vh;
+    overflow: hidden;
+}
+
+button,
+input,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+::selection {
+    color: #06101f;
+    background: #ffffff;
+}
+
+/* =========================================================
+   Прелоадер
+   ========================================================= */
+
+.preloader {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    background: radial-gradient(circle at center, #061936 0%, #02040a 62%);
+    transition: opacity 500ms ease, visibility 500ms ease;
+}
+
+.preloader.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.preloader__mark {
+    position: absolute;
+    top: 44%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: 0.72em;
+    text-indent: 0.72em;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.preloader__line {
+    width: 160px;
+    height: 1px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.preloader__line::after {
+    content: "";
+    display: block;
+    width: 56px;
+    height: 1px;
+    background: #ffffff;
+    animation: preloaderLine 1.2s ease-in-out infinite;
+}
+
+@keyframes preloaderLine {
+    0% {
+        transform: translateX(-60px);
+    }
+
+    100% {
+        transform: translateX(170px);
+    }
+}
+
+/* =========================================================
+   Входной экран
+   ========================================================= */
+
+.intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, rgba(47, 118, 255, 0.22), transparent 34%),
+        linear-gradient(180deg, rgba(2, 10, 28, 0.16), rgba(2, 4, 10, 0.86));
+}
+
+.intro-3d-logo {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+.intro-brand-title {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    padding-left: 0.24em;
+    font-size: 72px;
+    line-height: 1;
+    letter-spacing: 0.24em;
+    text-shadow: 0 0 36px rgba(162, 203, 255, 0.5);
+    opacity: 0;
+    animation: brandAppear 1.2s ease forwards 0.45s;
+}
+
+@keyframes brandAppear {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.enter-prompt {
+    position: absolute;
+    left: 50%;
+    bottom: 58px;
+    z-index: 3;
+    transform: translateX(-50%);
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
+    padding: 14px 26px;
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.06);
+    letter-spacing: 0.18em;
+    font-size: 12px;
+    text-transform: uppercase;
+    animation: promptBlink 1.25s ease-in-out infinite;
+}
+
+.enter-prompt:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+@keyframes promptBlink {
+    0%,
+    100% {
+        opacity: 0.28;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* =========================================================
+   Шапка
+   Что изменено:
+   - убран linear-gradient;
+   - убран backdrop-filter;
+   - убран 3D-логотип из шапки;
+   - элементы опущены ниже через padding-top и grid.
+   ========================================================= */
+
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 70;
+    width: 100%;
+    height: var(--header-height);
+    display: grid;
+    grid-template-rows: 58px 44px;
+    align-content: center;
+    row-gap: 14px;
+    padding: 28px 64px 20px;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    transition:
+        opacity var(--transition-main),
+        transform var(--transition-main),
+        visibility var(--transition-main);
+}
+
+.site-header.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-24px);
+}
+
+.site-header.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.site-header__brand {
+    align-self: end;
+    justify-self: center;
+    padding-left: 0.36em;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.36em;
+    text-shadow:
+        0 0 18px rgba(160, 205, 255, 0.8),
+        0 0 46px rgba(0, 95, 234, 0.56);
+}
+
+.site-header__nav {
+    align-self: center;
+    justify-self: center;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 12px;
+    width: min(780px, 70vw);
+}
+
+.nav-link {
+    min-height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 999px;
+    color: rgba(255, 255, 255, 0.76);
+    background: rgba(255, 255, 255, 0.055);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 11px;
+    transition:
+        color var(--transition-main),
+        background var(--transition-main),
+        border-color var(--transition-main),
+        transform var(--transition-main);
+}
+
+.nav-link:hover,
+.nav-link.is-active {
+    color: #06101f;
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(255, 255, 255, 0.92);
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   Основной контент
+   ========================================================= */
+
+.site-main {
+    position: relative;
+    z-index: 10;
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: calc(var(--header-height) + 40px) 0 100px;
+    transition:
+        opacity 500ms ease,
+        visibility 500ms ease,
+        transform 500ms ease;
+}
+
+.site-main.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(18px);
+}
+
+.content-section {
+    min-height: 720px;
+    scroll-margin-top: calc(var(--header-height) + 24px);
+    padding: 44px 0 84px;
+}
+
+.reveal-section {
+    opacity: 0;
+    transform: translateY(36px);
+    transition:
+        opacity 760ms ease,
+        transform 760ms ease;
+}
+
+.reveal-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-kicker,
+.section-eyebrow {
+    margin: 0 0 12px;
+    color: var(--color-accent);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.section-head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 52px 0 28px;
+}
+
+.section-head--wide {
+    display: block;
+    max-width: 760px;
+}
+
+.section-head h2,
+.menu-logo-card h2,
+.modal__dialog h2,
+.order-panel h2 {
+    margin: 0;
+    font-size: 46px;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+}
+
+.section-head p {
+    margin-bottom: 10px;
+}
+
+.menu-logo-card {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    align-items: center;
+    gap: 42px;
+    min-height: 320px;
+    padding: 34px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(4, 12, 30, 0.46);
+    box-shadow: var(--shadow-soft);
+}
+
+.menu-3d-logo {
+    width: 300px;
+    height: 260px;
+    overflow: hidden;
+    border-radius: 26px;
+    background: radial-gradient(circle at center, rgba(135, 194, 255, 0.24), rgba(255, 255, 255, 0.02));
+}
+
+.menu-logo-card__label {
+    margin: 0 0 12px;
+    color: var(--color-accent);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.menu-logo-card__text p {
+    max-width: 640px;
+    color: var(--color-muted);
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.auth-mini-panel {
+    min-width: 250px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.auth-mini-panel strong {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+}
+
+.loading-card,
+.product-card,
+.glass-card,
+.product-detail,
+.author-card {
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+        rgba(4, 12, 30, 0.5);
+    box-shadow: var(--shadow-soft);
+}
+
+.loading-card {
+    grid-column: 1 / -1;
+    padding: 36px;
+    color: var(--color-muted);
+    text-align: center;
+}
+
+.product-card {
+    overflow: hidden;
+    min-height: 430px;
+    transition:
+        transform var(--transition-main),
+        border-color var(--transition-main),
+        background var(--transition-main);
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.36);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+        rgba(4, 12, 30, 0.58);
+}
+
+.product-media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    height: 240px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 32%, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(145deg, rgba(7, 25, 58, 0.92), rgba(2, 5, 13, 0.96));
+}
+
+.product-media::after {
+    content: "НЕАЛИТ";
+    position: absolute;
+    color: rgba(255, 255, 255, 0.24);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;
+}
+
+.product-media img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-content {
+    padding: 22px;
+}
+
+.product-content h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    letter-spacing: -0.03em;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.product-price {
+    color: var(--color-text);
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.product-description {
+    min-height: 72px;
+    color: var(--color-muted);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.product-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.primary-button,
+.ghost-button {
+    min-height: 44px;
+    border-radius: 999px;
+    padding: 0 20px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    transition:
+        background var(--transition-main),
+        color var(--transition-main),
+        border-color var(--transition-main),
+        transform var(--transition-main);
+}
+
+.primary-button {
+    color: #06101f;
+    background: rgba(255, 255, 255, 0.94);
+    border-color: rgba(255, 255, 255, 0.94);
+    font-weight: 700;
+}
+
+.primary-button:hover {
+    transform: translateY(-1px);
+    background: #ffffff;
+}
+
+.ghost-button {
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.ghost-button:hover {
+    background: rgba(255, 255, 255, 0.14);
+}
+
+.product-detail {
+    margin-top: 28px;
+    padding: 32px;
+}
+
+.product-detail.is-hidden {
+    display: none;
+}
+
+.product-detail__grid {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 34px;
+}
+
+.product-detail__image {
+    min-height: 360px;
+    border-radius: 26px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.18), transparent 34%),
+        linear-gradient(145deg, rgba(7, 25, 58, 0.92), rgba(2, 5, 13, 0.96));
+}
+
+.product-detail__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.product-detail h3 {
+    margin: 0 0 14px;
+    font-size: 38px;
+    letter-spacing: -0.04em;
+}
+
+.product-detail p {
+    color: var(--color-muted);
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.text-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-top: 32px;
+}
+
+.glass-card {
+    padding: 28px;
+}
+
+.glass-card h3 {
+    margin: 0 0 14px;
+    font-size: 24px;
+}
+
+.glass-card p {
+    color: var(--color-muted);
+    line-height: 1.7;
+}
+
+.author-card {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 34px;
+    align-items: center;
+    margin-top: 34px;
+    padding: 34px;
+}
+
+.author-card__image {
+    display: grid;
+    place-items: center;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    color: rgba(255, 255, 255, 0.84);
+    background:
+        radial-gradient(circle at 42% 34%, rgba(255, 255, 255, 0.32), transparent 28%),
+        linear-gradient(145deg, #0f356f, #030711);
+    font-size: 82px;
+    font-weight: 700;
+}
+
+.author-card__content h3 {
+    margin: 0 0 16px;
+    font-size: 34px;
+}
+
+.author-card__content p {
+    color: var(--color-muted);
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.contacts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-top: 34px;
+}
+
+.contact-label {
+    display: block;
+    margin-bottom: 12px;
+    color: var(--color-accent);
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+}
+
+/* =========================================================
+   Панель заказа
+   ========================================================= */
+
+.order-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 120;
+    width: 20%;
+    min-width: 340px;
+    height: 100vh;
+    padding: 26px;
+    background:
+        linear-gradient(180deg, rgba(5, 15, 34, 0.96), rgba(2, 4, 10, 0.98));
+    border-left: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: -24px 0 80px rgba(0, 0, 0, 0.46);
+    transform: translateX(104%);
+    transition: transform 420ms ease;
+}
+
+.order-panel.is-open {
+    transform: translateX(0);
+}
+
+.order-panel__close,
+.modal__close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 26px;
+    line-height: 1;
+}
+
+.order-panel__content {
+    padding-top: 54px;
+}
+
+.order-product {
+    display: grid;
+    gap: 8px;
+    margin: 22px 0;
+    padding: 18px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.order-product span {
+    color: var(--color-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+}
+
+.order-form {
+    display: grid;
+    gap: 16px;
+    margin-top: 26px;
+}
+
+.order-form label,
+.auth-form label {
+    display: grid;
+    gap: 8px;
+    color: var(--color-muted);
+    font-size: 13px;
+}
+
+.order-form input,
+.order-form textarea,
+.auth-form input {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 16px;
+    padding: 14px 15px;
+    color: var(--color-text);
+    background: rgba(255, 255, 255, 0.07);
+    outline: none;
+}
+
+.order-form textarea {
+    min-height: 92px;
+    resize: vertical;
+}
+
+.order-form input:focus,
+.order-form textarea:focus,
+.auth-form input:focus {
+    border-color: rgba(255, 255, 255, 0.48);
+}
+
+/* =========================================================
+   Модальное окно авторизации
+   ========================================================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 140;
+    display: grid;
+    place-items: center;
+}
+
+.modal.is-hidden {
+    display: none;
+}
+
+.modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.62);
+}
+
+.modal__dialog {
+    position: relative;
+    z-index: 2;
+    width: 460px;
+    padding: 34px;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05)),
+        rgba(4, 12, 30, 0.96);
+    box-shadow: var(--shadow-soft);
+}
+
+.modal__description {
+    color: var(--color-muted);
+    line-height: 1.65;
+}
+
+.auth-form {
+    display: grid;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.remember-row {
+    display: flex !important;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 10px !important;
+}
+
+.remember-row input {
+    width: 16px;
+    height: 16px;
+}
+
+.auth-code-row {
+    display: grid;
+    gap: 14px;
+}
+
+.auth-code-row.is-hidden,
+.is-hidden {
+    display: none;
+}
+
+.form-message {
+    min-height: 22px;
+    margin: 0;
+    color: var(--color-muted);
+    line-height: 1.45;
+}
+
+.form-message.is-error {
+    color: var(--color-error);
+}
+
+.form-message.is-success {
+    color: var(--color-success);
+}
+
+/* =========================================================
+   Toast
+   ========================================================= */
+
+.toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    z-index: 160;
+    max-width: 520px;
+    padding: 14px 22px;
+    border: 1px solid var(--color-line);
+    border-radius: 999px;
+    color: var(--color-text);
+    background: rgba(3, 8, 20, 0.92);
+    box-shadow: var(--shadow-soft);
+    transform: translate(-50%, 24px);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--transition-main),
+        transform var(--transition-main);
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+
+.nav-link.is-active {
+    color: var(--color-accent-strong);  /* Подсвечиваем активную ссылку */
+    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.1);
+}
